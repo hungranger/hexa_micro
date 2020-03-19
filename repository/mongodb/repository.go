@@ -34,7 +34,7 @@ func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 
 func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (shortener.RedirectRepository, error) {
 	repo := &mongoRepository{
-		timeout:  mongoTimeout,
+		timeout:  time.Duration(mongoTimeout),
 		database: mongoDB,
 	}
 	client, err := newMongoClient(mongoURL, mongoTimeout)
