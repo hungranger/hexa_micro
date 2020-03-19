@@ -1,4 +1,4 @@
-package json
+package msgpack
 
 import (
 	shortener "hexa_micro/shotener"
