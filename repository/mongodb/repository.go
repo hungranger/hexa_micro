@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	shortener "hexa_micro/shotener"
+	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -17,6 +18,8 @@ type mongoRepository struct {
 	database string
 	timeout  time.Duration
 }
+
+const MONGODB_COLLECTION string = "redirects"
 
 func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mongoTimeout)*time.Second)
@@ -40,19 +43,22 @@ func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (shortener.R
 	client, err := newMongoClient(mongoURL, mongoTimeout)
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewMongoRepo")
+	} else {
+		log.Println("repository.NewMongoRep: Connect Mongodb Successfully")
 	}
 	repo.client = client
 	return repo, nil
 }
 
 func (r *mongoRepository) Find(code string) (*shortener.Redirect, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), r.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), r.timeout*time.Second)
 	defer cancel()
 	redirect := &shortener.Redirect{}
-	collection := r.client.Database(r.database).Collection("redirects")
+	collection := r.client.Database(r.database).Collection(MONGODB_COLLECTION)
 	filter := bson.M{"code": code}
 	err := collection.FindOne(ctx, filter).Decode(&redirect)
 	if err != nil {
+		log.Println(err)
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Wrap(shortener.ErrRedirectNotFound, "repository.Redirect.Find")
 		}
@@ -62,9 +68,9 @@ func (r *mongoRepository) Find(code string) (*shortener.Redirect, error) {
 }
 
 func (r *mongoRepository) Store(redirect *shortener.Redirect) error {
-	ctx, cancel := context.WithTimeout(context.Background(), r.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), r.timeout*time.Second)
 	defer cancel()
-	collection := r.client.Database(r.database).Collection("redirects")
+	collection := r.client.Database(r.database).Collection(MONGODB_COLLECTION)
 	_, err := collection.InsertOne(
 		ctx,
 		bson.M{
@@ -74,6 +80,8 @@ func (r *mongoRepository) Store(redirect *shortener.Redirect) error {
 		},
 	)
 	if err != nil {
+		log.Println(err)
+
 		return errors.Wrap(err, "repository.Redirect.Store")
 	}
 	return nil

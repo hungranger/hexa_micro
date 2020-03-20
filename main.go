@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	h "hexa_micro/api"
+	"hexa_micro/repository/inmemory"
 	mongo "hexa_micro/repository/mongodb"
-	"hexa_micro/repository/redis"
+	redis "hexa_micro/repository/redis"
 	shortener "hexa_micro/shotener"
 	"log"
 	"net/http"
@@ -33,7 +34,7 @@ func main() {
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Println("Listening on port :8000")
+		fmt.Printf("Listening on port %s\n", httpPort())
 		errs <- http.ListenAndServe(httpPort(), r)
 
 	}()
@@ -73,6 +74,11 @@ func chooseRepo() shortener.RedirectRepository {
 			log.Fatal(err)
 		}
 		return repo
+	case "inmemory":
+		repo := inmemory.NewInmemoryRepository()
+		return repo
+	default:
+		log.Fatal("Cannot choose repository")
 	}
 	return nil
 }
