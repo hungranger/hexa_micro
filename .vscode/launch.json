@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "D:\\Workspace\\Go\\projects\\hexa_micro\\main.go",
+            "program": "D:\\Workspace\\Go\\projects\\hexa_micro\\cmd\\rpc\\main.go",
             "env": {},
             "args": []
         }
