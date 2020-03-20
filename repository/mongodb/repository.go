@@ -44,7 +44,7 @@ func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (shortener.R
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewMongoRepo")
 	} else {
-		log.Println("repository.NewMongoRep: Connect Mongodb Successfully")
+		log.Println("repository.NewMongoRepo: Connect Mongodb Successfully")
 	}
 	repo.client = client
 	return repo, nil

@@ -3,6 +3,7 @@ package redis
 import (
 	"fmt"
 	shortener "hexa_micro/shotener"
+	"log"
 	"strconv"
 
 	"github.com/go-redis/redis"
@@ -13,8 +14,9 @@ type redisRepository struct {
 	client *redis.Client
 }
 
-func newRedisClient(redisURL string) (*redis.Client, error) {
+func newRedisClient(redisURL string, password string) (*redis.Client, error) {
 	opts, err := redis.ParseURL(redisURL)
+	opts.Password = password
 	if err != nil {
 		return nil, err
 	}
@@ -26,11 +28,13 @@ func newRedisClient(redisURL string) (*redis.Client, error) {
 	return client, nil
 }
 
-func NewRedisRepository(redisURL string) (shortener.RedirectRepository, error) {
+func NewRedisRepository(redisURL, password string) (shortener.RedirectRepository, error) {
 	repo := &redisRepository{}
-	client, err := newRedisClient(redisURL)
+	client, err := newRedisClient(redisURL, password)
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewRedisRepository")
+	} else {
+		log.Println("repository.NewRedisRepo: Connect Redis Successfully")
 	}
 	repo.client = client
 	return repo, nil

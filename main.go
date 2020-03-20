@@ -60,7 +60,8 @@ func chooseRepo() shortener.RedirectRepository {
 	switch os.Getenv("URL_DB") {
 	case "redis":
 		redisURL := os.Getenv("REDIS_URL")
-		repo, err := redis.NewRedisRepository(redisURL)
+		redisPassword := os.Getenv("REDIS_PASSWORD")
+		repo, err := redis.NewRedisRepository(redisURL, redisPassword)
 		if err != nil {
 			log.Fatal(err)
 		}
