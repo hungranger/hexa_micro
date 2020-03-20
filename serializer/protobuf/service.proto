@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package protobuf;
+
+message Redirect {
+    string code = 1;
+    string url = 2;
+    int64 createdAt = 3;
+}
+
+service ShortenerService {
+    rpc Store (Redirect) returns (Redirect);
+    rpc Find (Redirect) returns (Redirect);
+}

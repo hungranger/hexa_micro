@@ -5,32 +5,36 @@ import (
 	"hexa_micro/repository/inmemory"
 	mongo "hexa_micro/repository/mongodb"
 	"hexa_micro/repository/redis"
-	shortener "hexa_micro/shotener"
+	"hexa_micro/serializer/protobuf"
 	"log"
 	"net"
-	"net/http"
-	"net/rpc"
 	"os"
 	"strconv"
+
+	shortener "hexa_micro/shotener"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
 	repo := chooseRepo()
 	service := shortener.NewRedirectService(repo)
-	rpcHandler := api.NewRPCHandler(service)
-	err := rpc.Register(rpcHandler)
-	if err != nil {
-		log.Fatal("error registering API ", err)
-	}
+	grpcHandler := api.NewGRPCHandler(service)
 
-	rpc.HandleHTTP()
 	listener, err := net.Listen("tcp", ":4040")
 	if err != nil {
-		log.Fatal("Listener error ", err)
+		log.Panicln(err)
 	}
 
-	log.Printf("serving rpc on port %d", 4040)
-	http.Serve(listener, nil)
+	srv := grpc.NewServer()
+	protobuf.RegisterShortenerServiceServer(srv, grpcHandler)
+	reflection.Register(srv)
+
+	log.Printf("serving grpc on port %d\n", 4040)
+	if err := srv.Serve(listener); err != nil {
+		log.Panic(err)
+	}
 }
 
 func chooseRepo() shortener.RedirectRepository {
