@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	h "hexa_micro/api"
-	"hexa_micro/repository/inmemory"
-	mongo "hexa_micro/repository/mongodb"
-	redis "hexa_micro/repository/redis"
-	shortener "hexa_micro/shotener"
+	"hexa_micro/repository"
+	"hexa_micro/repository/RedirectRepository/inmemory"
+	mongo "hexa_micro/repository/RedirectRepository/mongodb"
+	"hexa_micro/repository/RedirectRepository/redis"
+	"hexa_micro/usecase/shortenURL"
 	"log"
 	"net/http"
 	"os"
@@ -20,8 +21,8 @@ import (
 
 func main() {
 	repo := chooseRepo()
-	service := shortener.NewRedirectService(repo)
-	handler := h.NewHandler(service)
+	shortenURLUseCase := shortenURL.NewShortenURLUseCase(repo)
+	handler := h.NewHandler(shortenURLUseCase)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -56,7 +57,7 @@ func httpPort() string {
 	return fmt.Sprintf(":%s", port)
 }
 
-func chooseRepo() shortener.RedirectRepository {
+func chooseRepo() repository.IRedirectRepository {
 	switch os.Getenv("URL_DB") {
 	case "redis":
 		redisURL := os.Getenv("REDIS_URL")

@@ -11,3 +11,9 @@ redisConfig: &redisConfig
   password: IdE6uMBbFi5St2YBxK4rEAoL4ObbgnDs
 inMemoryConfig: &inMemoryConfig
   code: inmemory
+useCaseConfig:
+  shortenURL:
+    code: shortenURL
+    redirectRepoConfig: &redirectRepoConfig
+      code: redirectRepo
+      dataStoreConfig: *mongoDBConfig

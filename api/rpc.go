@@ -1,22 +1,23 @@
 package api
 
 import (
-	shortener "hexa_micro/shotener"
+	"hexa_micro/model"
+	"hexa_micro/usecase"
 	"log"
 
 	"github.com/pkg/errors"
 )
 
 type RPCHandler struct {
-	redirectService shortener.RedirectService
+	shortenURLUseCase usecase.IShortenUseCase
 }
 
-func NewRPCHandler(redirectService shortener.RedirectService) *RPCHandler {
-	return &RPCHandler{redirectService}
+func NewRPCHandler(shortenURLUseCase usecase.IShortenUseCase) *RPCHandler {
+	return &RPCHandler{shortenURLUseCase}
 }
 
-func (h *RPCHandler) Find(code string, reply *shortener.Redirect) error {
-	redirect, err := h.redirectService.Find(code)
+func (h *RPCHandler) Find(code string, reply *model.Redirect) error {
+	redirect, err := h.shortenURLUseCase.Find(code)
 	if err != nil {
 		log.Println(err)
 		return errors.Wrap(err, "api.SimpleRPC.Find")
@@ -26,8 +27,8 @@ func (h *RPCHandler) Find(code string, reply *shortener.Redirect) error {
 	return nil
 }
 
-func (h *RPCHandler) Store(item *shortener.Redirect, reply *shortener.Redirect) error {
-	err := h.redirectService.Store(item)
+func (h *RPCHandler) Store(item *model.Redirect, reply *model.Redirect) error {
+	err := h.shortenURLUseCase.Store(item)
 	if err != nil {
 		log.Println(err)
 		return errors.Wrap(err, "api.SimpleRPC.Store")

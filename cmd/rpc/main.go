@@ -2,10 +2,11 @@ package main
 
 import (
 	"hexa_micro/api"
-	"hexa_micro/repository/inmemory"
-	mongo "hexa_micro/repository/mongodb"
-	"hexa_micro/repository/redis"
-	shortener "hexa_micro/shotener"
+	"hexa_micro/repository"
+	"hexa_micro/repository/RedirectRepository/inmemory"
+	mongo "hexa_micro/repository/RedirectRepository/mongodb"
+	"hexa_micro/repository/RedirectRepository/redis"
+	"hexa_micro/usecase/shortenURL"
 	"log"
 	"net"
 	"net/http"
@@ -16,8 +17,8 @@ import (
 
 func main() {
 	repo := chooseRepo()
-	service := shortener.NewRedirectService(repo)
-	rpcHandler := api.NewRPCHandler(service)
+	shortenURLUseCase := shortenURL.NewShortenURLUseCase(repo)
+	rpcHandler := api.NewRPCHandler(shortenURLUseCase)
 	err := rpc.Register(rpcHandler)
 	if err != nil {
 		log.Fatal("error registering API ", err)
@@ -33,7 +34,7 @@ func main() {
 	http.Serve(listener, nil)
 }
 
-func chooseRepo() shortener.RedirectRepository {
+func chooseRepo() repository.IRedirectRepository {
 	switch os.Getenv("URL_DB") {
 	case "redis":
 		redisURL := os.Getenv("REDIS_URL")

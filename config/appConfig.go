@@ -2,16 +2,21 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	ErrRedirectNotFound = errors.New("Redirect Not Found")
+	ErrRedirectInvalid  = errors.New("Redirect Invalid")
 )
 
 type AppConfig struct {
 	MongoDBConfig  DataStoreConfig `yaml:"mongoDBConfig"`
 	RedisConfig    DataStoreConfig `yaml:"redisConfig"`
 	InMemoryConfig DataStoreConfig `yaml:"inMemoryConfig"`
+	UseCase        UseCaseConfig   `yaml:"useCaseConfig"`
 }
 
 type DataStoreConfig struct {
@@ -26,6 +31,20 @@ type DataStoreConfig struct {
 	DbName string `yaml:"dbName"`
 	// Only some databases need this timeout
 	Timeout int `yaml:"timeout"`
+}
+
+type UseCaseConfig struct {
+	ShortenURL ShortenURLConfig `yaml:"shortenURL"`
+}
+
+type ShortenURLConfig struct {
+	Code               string     `yaml:"code"`
+	RedirectRepoConfig RepoConfig `yaml:"redirectRepoConfig"`
+}
+
+type RepoConfig struct {
+	Code            string          `yaml:"code"`
+	DataStoreConfig DataStoreConfig `yaml:"dataStoreConfig"`
 }
 
 // ReadConfig reads the file of the filename (in the same folder) and put it into the AppConfig
@@ -46,6 +65,6 @@ func ReadConfig(filename string) (*AppConfig, error) {
 		return nil, errors.Wrap(err, "validate config")
 	}
 
-	log.Print("appConfig:", ac)
+	// log.Print("appConfig:", ac)
 	return &ac, nil
 }

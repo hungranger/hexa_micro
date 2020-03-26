@@ -2,16 +2,16 @@ package main
 
 import (
 	"hexa_micro/api"
-	"hexa_micro/repository/inmemory"
-	mongo "hexa_micro/repository/mongodb"
-	"hexa_micro/repository/redis"
+	"hexa_micro/repository"
+	"hexa_micro/repository/RedirectRepository/inmemory"
+	mongo "hexa_micro/repository/RedirectRepository/mongodb"
+	"hexa_micro/repository/RedirectRepository/redis"
 	"hexa_micro/serializer/protobuf"
+	"hexa_micro/usecase/shortenURL"
 	"log"
 	"net"
 	"os"
 	"strconv"
-
-	shortener "hexa_micro/shotener"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -19,8 +19,8 @@ import (
 
 func main() {
 	repo := chooseRepo()
-	service := shortener.NewRedirectService(repo)
-	grpcHandler := api.NewGRPCHandler(service)
+	shortenURLUseCase := shortenURL.NewShortenURLUseCase(repo)
+	grpcHandler := api.NewGRPCHandler(shortenURLUseCase)
 
 	listener, err := net.Listen("tcp", ":4040")
 	if err != nil {
@@ -37,7 +37,7 @@ func main() {
 	}
 }
 
-func chooseRepo() shortener.RedirectRepository {
+func chooseRepo() repository.IRedirectRepository {
 	switch os.Getenv("URL_DB") {
 	case "redis":
 		redisURL := os.Getenv("REDIS_URL")

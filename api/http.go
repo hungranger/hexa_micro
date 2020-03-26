@@ -1,9 +1,11 @@
 package api
 
 import (
+	"hexa_micro/config"
+	"hexa_micro/serializer"
 	"hexa_micro/serializer/json"
 	"hexa_micro/serializer/msgpack"
-	shortener "hexa_micro/shotener"
+	"hexa_micro/usecase"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,11 +20,11 @@ type RedirectHandler interface {
 }
 
 type handler struct {
-	redirectService shortener.RedirectService
+	shortenURLUseCase usecase.IShortenUseCase
 }
 
-func NewHandler(redirectService shortener.RedirectService) RedirectHandler {
-	return &handler{redirectService}
+func NewHandler(shortenURLUseCase usecase.IShortenUseCase) RedirectHandler {
+	return &handler{shortenURLUseCase}
 }
 
 func setupResponse(w http.ResponseWriter, contentType string, body []byte, statusCode int) {
@@ -34,7 +36,7 @@ func setupResponse(w http.ResponseWriter, contentType string, body []byte, statu
 	}
 }
 
-func (h *handler) serializer(contentType string) shortener.RedirectSerializer {
+func (h *handler) serializer(contentType string) serializer.IRedirectSerializer {
 	if contentType == "application/x-msgpack" {
 		return &msgpack.Redirect{}
 	}
@@ -43,9 +45,9 @@ func (h *handler) serializer(contentType string) shortener.RedirectSerializer {
 
 func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
-	redirect, err := h.redirectService.Find(code)
+	redirect, err := h.shortenURLUseCase.Find(code)
 	if err != nil {
-		if errors.Cause(err) == shortener.ErrRedirectNotFound {
+		if errors.Cause(err) == config.ErrRedirectNotFound {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
@@ -67,9 +69,9 @@ func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	err = h.redirectService.Store(redirect)
+	err = h.shortenURLUseCase.Store(redirect)
 	if err != nil {
-		if errors.Cause(err) == shortener.ErrRedirectInvalid {
+		if errors.Cause(err) == config.ErrRedirectInvalid {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}

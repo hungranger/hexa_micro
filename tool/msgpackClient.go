@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"os"
 
-	shortener "hexa_micro/shotener"
+	"hexa_micro/model"
 
 	"github.com/vmihailenco/msgpack"
 )
 
 func main() {
 	address := fmt.Sprintf("http://localhost%s", httpPort())
-	redirect := shortener.Redirect{}
+	redirect := model.Redirect{}
 	redirect.URL = "https://github.com/tensor-programming?tab=repositories"
 
 	body, err := msgpack.Marshal(&redirect)

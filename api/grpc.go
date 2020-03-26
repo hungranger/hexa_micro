@@ -2,8 +2,9 @@ package api
 
 import (
 	"context"
+	"hexa_micro/model"
 	"hexa_micro/serializer/protobuf"
-	shortener "hexa_micro/shotener"
+	"hexa_micro/usecase"
 )
 
 // type RPCServer interface {
@@ -12,15 +13,15 @@ import (
 // }
 
 type GRPCHandler struct {
-	redirectService shortener.RedirectService
+	shortenUseCase usecase.IShortenUseCase
 }
 
-func NewGRPCHandler(redirectService shortener.RedirectService) protobuf.ShortenerServiceServer {
-	return &GRPCHandler{redirectService}
+func NewGRPCHandler(shortenUseCase usecase.IShortenUseCase) protobuf.ShortenerServiceServer {
+	return &GRPCHandler{shortenUseCase}
 }
 
 func (h *GRPCHandler) Find(ctx context.Context, request *protobuf.Redirect) (*protobuf.Redirect, error) {
-	redirect, err := h.redirectService.Find(request.GetCode())
+	redirect, err := h.shortenUseCase.Find(request.GetCode())
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +33,8 @@ func (h *GRPCHandler) Find(ctx context.Context, request *protobuf.Redirect) (*pr
 }
 
 func (h *GRPCHandler) Store(ctx context.Context, request *protobuf.Redirect) (*protobuf.Redirect, error) {
-	item := &shortener.Redirect{URL: request.GetUrl()}
-	err := h.redirectService.Store(item)
+	item := &model.Redirect{URL: request.GetUrl()}
+	err := h.shortenUseCase.Store(item)
 	if err != nil {
 		return nil, err
 	}
