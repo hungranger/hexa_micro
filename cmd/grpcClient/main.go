@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/interface/grpcClient/protobuf"
-	"log"
 
 	"google.golang.org/grpc"
 )
@@ -12,7 +11,7 @@ import (
 func main() {
 	conn, err := grpc.Dial("localhost:4040", grpc.WithInsecure())
 	if err != nil {
-		log.Panic(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	client := protobuf.NewShortenerServiceClient(conn)
@@ -25,7 +24,7 @@ func main() {
 
 	item, err := client.Store(context.Background(), &git)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 	result = append(result, *item)
 	item, _ = client.Store(context.Background(), &vnexpress)
@@ -35,6 +34,6 @@ func main() {
 
 	for _, item := range result {
 		redirect, _ := client.Find(context.Background(), &item)
-		fmt.Printf("%s => %s\n", redirect.GetUrl(), redirect.GetCode())
+		logger.Log.Infof("%s => %s\n", redirect.GetUrl(), redirect.GetCode())
 	}
 }

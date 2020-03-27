@@ -2,6 +2,7 @@ package servicecontainer
 
 import (
 	"hexa_micro/pkg/shortenservice/config"
+	logFactory "hexa_micro/pkg/shortenservice/container/loggerfactory"
 	"hexa_micro/pkg/shortenservice/repository"
 	"hexa_micro/pkg/shortenservice/repository/RedirectRepository/inmemory"
 	mongo "hexa_micro/pkg/shortenservice/repository/RedirectRepository/mongodb"
@@ -20,18 +21,35 @@ func (sc *ServiceContainer) InitApp(filename string) error {
 	var err error
 	config, err := loadConfig(filename)
 	if err != nil {
-		return errors.Wrap(err, "")
+		return errors.Wrap(err, "loadConfig")
 	}
+
 	sc.AppConfig = config
+
+	err = loadLogger(config.Log)
+	if err != nil {
+		return errors.Wrap(err, "loadLogger")
+	}
+
 	return nil
 }
 
 func loadConfig(filename string) (*config.AppConfig, error) {
 	ac, err := config.ReadConfig(filename)
 	if err != nil {
-		return nil, errors.Wrap(err, "servicecontainer.loadconfig")
+		return nil, errors.Wrap(err, "readConfigFile")
 	}
 	return ac, nil
+}
+
+// loads the logger
+func loadLogger(lc config.LogConfig) error {
+	loggerType := lc.Code
+	err := logFactory.GetLogFactoryBuilder(loggerType).Build(&lc)
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+	return nil
 }
 
 func (sc *ServiceContainer) BuildUseCase(code string) (interface{}, error) {

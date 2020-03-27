@@ -16,6 +16,9 @@ type AppConfig struct {
 	MongoDBConfig  DataStoreConfig `yaml:"mongoDBConfig"`
 	RedisConfig    DataStoreConfig `yaml:"redisConfig"`
 	InMemoryConfig DataStoreConfig `yaml:"inMemoryConfig"`
+	ZapConfig      LogConfig       `yaml:"zapConfig"`
+	LorusConfig    LogConfig       `yaml:"logrusConfig"`
+	Log            LogConfig       `yaml:"logConfig"`
 	UseCase        UseCaseConfig   `yaml:"useCaseConfig"`
 }
 
@@ -42,9 +45,22 @@ type ShortenURLConfig struct {
 	RedirectRepoConfig RepoConfig `yaml:"redirectRepoConfig"`
 }
 
+// RepoConfig represents handlers for data store. It can be a database or a gRPC connection
 type RepoConfig struct {
 	Code            string          `yaml:"code"`
 	DataStoreConfig DataStoreConfig `yaml:"dataStoreConfig"`
+}
+
+// LogConfig represents logger handler
+// Logger has many parameters can be set or changed. Currently, only three are listed here. Can add more into it to
+// fits your needs.
+type LogConfig struct {
+	// log library name
+	Code string `yaml:"code"`
+	// log level
+	Level string `yaml:"level"`
+	// show caller in log message
+	EnableCaller bool `yaml:"enableCaller"`
 }
 
 // ReadConfig reads the file of the filename (in the same folder) and put it into the AppConfig
@@ -65,6 +81,5 @@ func ReadConfig(filename string) (*AppConfig, error) {
 		return nil, errors.Wrap(err, "validate config")
 	}
 
-	// log.Print("appConfig:", ac)
 	return &ac, nil
 }

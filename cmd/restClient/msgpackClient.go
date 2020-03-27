@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
 
 	"github.com/vmihailenco/msgpack"
@@ -20,23 +20,23 @@ func main() {
 
 	body, err := msgpack.Marshal(&redirect)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	resp, err := http.Post(address, "application/x-msgpack", bytes.NewBuffer(body))
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	msgpack.Unmarshal(body, &redirect)
 
-	log.Printf("%v\n", redirect)
+	logger.Log.Infof("%v\n", redirect)
 }
 
 func httpPort() string {

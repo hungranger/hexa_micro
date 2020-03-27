@@ -3,10 +3,10 @@ package main
 import (
 	"hexa_micro/pkg/shortenservice/config"
 	"hexa_micro/pkg/shortenservice/container"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/container/servicecontainer"
 	rpcClient "hexa_micro/pkg/shortenservice/interface/rpcClient"
 	"hexa_micro/pkg/shortenservice/usecase"
-	"log"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -23,7 +23,7 @@ func main() {
 	configPath := DEV_CONFIG
 	container, err := loadConfig(configPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatalf("%+v", err)
 		return
 	}
 
@@ -32,16 +32,16 @@ func main() {
 	rpcHandler := rpcClient.NewRPCHandler(shortenURLUseCase.(usecase.IShortenUseCase))
 	err = rpc.Register(rpcHandler)
 	if err != nil {
-		log.Fatal("error registering API ", err)
+		logger.Log.Fatalf("error registering API: %+v", err)
 	}
 
 	rpc.HandleHTTP()
 	listener, err := net.Listen("tcp", ":4040")
 	if err != nil {
-		log.Fatal("Listener error ", err)
+		logger.Log.Fatalf("Listener error: %+v", err)
 	}
 
-	log.Printf("serving rpc on port %d", 4040)
+	logger.Log.Infof("serving rpc on port %d", 4040)
 	http.Serve(listener, nil)
 }
 

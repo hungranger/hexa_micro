@@ -11,6 +11,15 @@ redisConfig: &redisConfig
   password: IdE6uMBbFi5St2YBxK4rEAoL4ObbgnDs
 inMemoryConfig: &inMemoryConfig
   code: inmemory
+zapConfig: &zapConfig
+    code: zap
+    level: debug
+    enableCaller: true
+logrusConfig: &logrusConfig
+    code: logrus
+    level: debug
+    enableCaller: true
+logConfig: *zapConfig
 useCaseConfig:
   shortenURL:
     code: shortenURL

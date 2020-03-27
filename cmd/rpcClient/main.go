@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
-	"log"
 	"net/rpc"
 )
 
@@ -13,7 +12,7 @@ func main() {
 
 	client, err := rpc.DialHTTP("tcp", "localhost:4040")
 	if err != nil {
-		log.Fatal("Connection Error: ", err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	git := model.Redirect{URL: "https://github.com"}
@@ -29,6 +28,6 @@ func main() {
 
 	for _, item := range result {
 		client.Call("RPCHandler.Find", item.Code, &reply)
-		fmt.Printf("%s => %s\n", reply.URL, reply.Code)
+		logger.Log.Infof("%s => %s\n", reply.URL, reply.Code)
 	}
 }

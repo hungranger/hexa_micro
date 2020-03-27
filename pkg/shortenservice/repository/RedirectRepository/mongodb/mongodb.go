@@ -3,9 +3,9 @@ package mongo
 import (
 	"context"
 	"hexa_micro/pkg/shortenservice/config"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
 	"hexa_micro/pkg/shortenservice/repository"
-	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -46,7 +46,7 @@ func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (repository.
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewMongoRepo")
 	} else {
-		log.Println("repository.NewMongoRepo: Connect Mongodb Successfully")
+		logger.Log.Info("Connect Mongodb Successfully")
 	}
 	repo.client = client
 	return repo, nil
@@ -60,7 +60,6 @@ func (r *mongoRepository) Find(code string) (*model.Redirect, error) {
 	filter := bson.M{"code": code}
 	err := collection.FindOne(ctx, filter).Decode(&redirect)
 	if err != nil {
-		log.Println(err)
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Wrap(config.ErrRedirectNotFound, "repository.Redirect.Find")
 		}
@@ -82,8 +81,6 @@ func (r *mongoRepository) Store(redirect *model.Redirect) error {
 		},
 	)
 	if err != nil {
-		log.Println(err)
-
 		return errors.Wrap(err, "repository.Redirect.Store")
 	}
 	return nil

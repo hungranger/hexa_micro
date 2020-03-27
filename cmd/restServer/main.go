@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"hexa_micro/pkg/shortenservice/config"
 	"hexa_micro/pkg/shortenservice/container"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/container/servicecontainer"
 	restclient "hexa_micro/pkg/shortenservice/interface/restClient"
 	"hexa_micro/pkg/shortenservice/usecase"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,13 +27,13 @@ func main() {
 	configPath := DEV_CONFIG
 	container, err := loadConfig(configPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatalf("%+v", err)
 		return
 	}
 
 	shortenURLUseCase, err := container.BuildUseCase(config.SHORTEN_URL)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatalf("%+v", err)
 		return
 	}
 	handler := restclient.NewHandler(shortenURLUseCase.(usecase.IShortenUseCase))
@@ -49,7 +49,7 @@ func main() {
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Printf("Listening on port %s\n", httpPort())
+		logger.Log.Infof("Listening on port %s\n", httpPort())
 		errs <- http.ListenAndServe(httpPort(), r)
 
 	}()
@@ -60,7 +60,7 @@ func main() {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	fmt.Printf("Terminated %s", <-errs)
+	logger.Log.Infof("Terminated %s", <-errs)
 }
 
 func httpPort() string {

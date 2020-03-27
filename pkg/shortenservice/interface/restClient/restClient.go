@@ -2,12 +2,12 @@ package restclient
 
 import (
 	"hexa_micro/pkg/shortenservice/config"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/interface/restClient/serializer"
 	"hexa_micro/pkg/shortenservice/interface/restClient/serializer/json"
 	"hexa_micro/pkg/shortenservice/interface/restClient/serializer/msgpack"
 	"hexa_micro/pkg/shortenservice/usecase"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -32,7 +32,8 @@ func setupResponse(w http.ResponseWriter, contentType string, body []byte, statu
 	w.WriteHeader(statusCode)
 	_, err := w.Write(body)
 	if err != nil {
-		log.Println(err)
+		logger.Log.Fatalf("%+v", err)
+		return
 	}
 }
 

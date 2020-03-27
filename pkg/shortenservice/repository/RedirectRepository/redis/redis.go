@@ -3,9 +3,9 @@ package redis
 import (
 	"fmt"
 	"hexa_micro/pkg/shortenservice/config"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
 	"hexa_micro/pkg/shortenservice/repository"
-	"log"
 	"strconv"
 
 	"github.com/go-redis/redis"
@@ -36,7 +36,7 @@ func NewRedisRepository(redisURL, password string) (repository.IRedirectReposito
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewRedisRepository")
 	} else {
-		log.Println("repository.NewRedisRepo: Connect Redis Successfully")
+		logger.Log.Info("Connect Redis Successfully")
 	}
 	repo.client = client
 	return repo, nil

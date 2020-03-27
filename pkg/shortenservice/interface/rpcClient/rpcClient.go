@@ -3,7 +3,6 @@ package rpcClient
 import (
 	"hexa_micro/pkg/shortenservice/model"
 	"hexa_micro/pkg/shortenservice/usecase"
-	"log"
 
 	"github.com/pkg/errors"
 )
@@ -19,7 +18,6 @@ func NewRPCHandler(shortenURLUseCase usecase.IShortenUseCase) *RPCHandler {
 func (h *RPCHandler) Find(code string, reply *model.Redirect) error {
 	redirect, err := h.shortenURLUseCase.Find(code)
 	if err != nil {
-		log.Println(err)
 		return errors.Wrap(err, "api.SimpleRPC.Find")
 	}
 
@@ -30,7 +28,6 @@ func (h *RPCHandler) Find(code string, reply *model.Redirect) error {
 func (h *RPCHandler) Store(item *model.Redirect, reply *model.Redirect) error {
 	err := h.shortenURLUseCase.Store(item)
 	if err != nil {
-		log.Println(err)
 		return errors.Wrap(err, "api.SimpleRPC.Store")
 	}
 

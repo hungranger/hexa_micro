@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 )
@@ -18,23 +18,23 @@ func main() {
 
 	body, err := json.Marshal(&redirect)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	resp, err := http.Post(address, "application/json", bytes.NewBuffer(body))
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	json.Unmarshal(body, &redirect)
 
-	log.Printf("%v\n", redirect)
+	logger.Log.Infof("%v\n", redirect)
 }
 
 func httpPort() string {

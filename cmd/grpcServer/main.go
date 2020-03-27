@@ -3,11 +3,11 @@ package main
 import (
 	"hexa_micro/pkg/shortenservice/config"
 	"hexa_micro/pkg/shortenservice/container"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/container/servicecontainer"
 	grpcClient "hexa_micro/pkg/shortenservice/interface/grpcClient"
 	"hexa_micro/pkg/shortenservice/interface/grpcClient/protobuf"
 	"hexa_micro/pkg/shortenservice/usecase"
-	"log"
 	"net"
 
 	"github.com/pkg/errors"
@@ -24,7 +24,7 @@ func main() {
 	configPath := DEV_CONFIG
 	container, err := loadConfig(configPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatalf("%+v", err)
 		return
 	}
 
@@ -33,16 +33,16 @@ func main() {
 
 	listener, err := net.Listen("tcp", ":4040")
 	if err != nil {
-		log.Panicln(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 
 	srv := grpc.NewServer()
 	protobuf.RegisterShortenerServiceServer(srv, grpcHandler)
 	reflection.Register(srv)
 
-	log.Printf("serving grpc on port %d\n", 4040)
+	logger.Log.Infof("serving grpc on port %d\n", 4040)
 	if err := srv.Serve(listener); err != nil {
-		log.Panic(err)
+		logger.Log.Fatalf("%+v", err)
 	}
 }
 

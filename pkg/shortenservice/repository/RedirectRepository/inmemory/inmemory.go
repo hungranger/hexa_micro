@@ -3,9 +3,9 @@ package inmemory
 import (
 	"fmt"
 	"hexa_micro/pkg/shortenservice/config"
+	"hexa_micro/pkg/shortenservice/container/logger"
 	"hexa_micro/pkg/shortenservice/model"
 	"hexa_micro/pkg/shortenservice/repository"
-	"log"
 
 	"github.com/pkg/errors"
 )
@@ -15,7 +15,7 @@ type inmemoryRepository struct {
 }
 
 func NewInmemoryRepository() repository.IRedirectRepository {
-	log.Println("repository.NewInmemoryRepo: Connect Inmemory Successfully")
+	logger.Log.Info("Connect Inmemory Successfully")
 	return &inmemoryRepository{
 		map[string]interface{}{},
 	}
@@ -37,8 +37,19 @@ func (r *inmemoryRepository) Find(code string) (*model.Redirect, error) {
 func (r *inmemoryRepository) Store(redirect *model.Redirect) error {
 	key := r.generateKey(redirect.Code)
 	r.db[key] = redirect
-	// for _, v := range r.db {
-	// 	log.Printf("%s: %s", v.(*model.Redirect).Code, v.(*model.Redirect).URL)
-	// }
+
 	return nil
+}
+
+func (r *inmemoryRepository) FindAll() ([]model.Redirect, error) {
+	var result []model.Redirect
+	for _, v := range r.db {
+		result = append(result, model.Redirect{
+			Code:     v.(model.Redirect).Code,
+			URL:      v.(*model.Redirect).URL,
+			CreateAt: v.(*model.Redirect).CreateAt,
+		})
+	}
+
+	return result, nil
 }

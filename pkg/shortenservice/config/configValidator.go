@@ -21,16 +21,25 @@ const (
 	REDIRECT_REPO = "redirectRepo"
 )
 
+// constant for logger code, it needs to match log code (logConfig)in configuration
+const (
+	LOGRUS string = "logrus"
+	ZAP    string = "zap"
+)
+
 func validateConfig(appConfig AppConfig) error {
 	err := validateDataStore(appConfig)
 	if err != nil {
-		return errors.Wrap(err, "validateDatastoreConfig")
+		return err
 	}
-
+	err = validateLogger(appConfig)
+	if err != nil {
+		return nil
+	}
 	useCase := appConfig.UseCase
 	err = validateUseCase(useCase)
 	if err != nil {
-		return errors.Wrap(err, "")
+		return err
 	}
 	return nil
 }
@@ -61,10 +70,27 @@ func validateDataStore(appConfig AppConfig) error {
 	return nil
 }
 
+func validateLogger(appConfig AppConfig) error {
+	zc := appConfig.ZapConfig
+	key := zc.Code
+	zcMsg := " in validateLogger doesn't match key = "
+	if ZAP != key {
+		errMsg := ZAP + zcMsg + key
+		return errors.New(errMsg)
+	}
+	lc := appConfig.LorusConfig
+	key = lc.Code
+	if LOGRUS != lc.Code {
+		errMsg := LOGRUS + zcMsg + key
+		return errors.New(errMsg)
+	}
+	return nil
+}
+
 func validateUseCase(useCase UseCaseConfig) error {
 	err := validateShortenURL(useCase)
 	if err != nil {
-		return errors.Wrap(err, "")
+		return err
 	}
 	return nil
 }
