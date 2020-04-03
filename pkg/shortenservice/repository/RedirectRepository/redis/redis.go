@@ -13,7 +13,7 @@ import (
 )
 
 type redisRepository struct {
-	client *redis.Client
+	db *redis.Client
 }
 
 func newRedisClient(redisURL string, password string) (*redis.Client, error) {
@@ -38,7 +38,7 @@ func NewRedisRepository(redisURL, password string) (repository.IRedirectReposito
 	} else {
 		logger.Log.Info("Connect Redis Successfully")
 	}
-	repo.client = client
+	repo.db = client
 	return repo, nil
 }
 
@@ -49,7 +49,7 @@ func (r *redisRepository) generateKey(code string) string {
 func (r *redisRepository) Find(code string) (*model.Redirect, error) {
 	redirect := &model.Redirect{}
 	key := r.generateKey(code)
-	data, err := r.client.HGetAll(key).Result()
+	data, err := r.db.HGetAll(key).Result()
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.Redirect.Find")
 	}
@@ -73,7 +73,7 @@ func (r *redisRepository) Store(redirect *model.Redirect) error {
 		"url":       redirect.URL,
 		"create_at": redirect.CreateAt,
 	}
-	_, err := r.client.HMSet(key, data).Result()
+	_, err := r.db.HMSet(key, data).Result()
 	if err != nil {
 		return errors.Wrap(err, "repository.Redirect.Store")
 	}

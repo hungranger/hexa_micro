@@ -25,7 +25,7 @@ func (r *ShortenURLUseCase) Find(code string) (*model.Redirect, error) {
 
 func (r *ShortenURLUseCase) Store(redirect *model.Redirect) error {
 	if err := validate.Validate(redirect); err != nil {
-		return errs.Wrap(config.ErrRedirectInvalid, "service.Redirect.Store")
+		return errs.Wrap(config.ErrRedirectInvalid, "")
 	}
 
 	redirect.Code = shortid.MustGenerate()

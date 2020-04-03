@@ -16,7 +16,7 @@ import (
 )
 
 type mongoRepository struct {
-	client   *mongo.Client
+	db       *mongo.Client
 	database string
 	timeout  time.Duration
 }
@@ -38,25 +38,26 @@ func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 }
 
 func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (repository.IRedirectRepository, error) {
-	repo := &mongoRepository{
-		timeout:  time.Duration(mongoTimeout),
-		database: mongoDB,
-	}
 	client, err := newMongoClient(mongoURL, mongoTimeout)
 	if err != nil {
 		return nil, errors.Wrap(err, "repository.NewMongoRepo")
-	} else {
-		logger.Log.Info("Connect Mongodb Successfully")
 	}
-	repo.client = client
+	logger.Log.Info("Connect Mongodb Successfully")
+
+	repo := &mongoRepository{
+		db:       client,
+		timeout:  time.Duration(mongoTimeout),
+		database: mongoDB,
+	}
 	return repo, nil
 }
 
 func (r *mongoRepository) Find(code string) (*model.Redirect, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.timeout*time.Second)
 	defer cancel()
+
 	redirect := &model.Redirect{}
-	collection := r.client.Database(r.database).Collection(MONGODB_COLLECTION)
+	collection := r.db.Database(r.database).Collection(MONGODB_COLLECTION)
 	filter := bson.M{"code": code}
 	err := collection.FindOne(ctx, filter).Decode(&redirect)
 	if err != nil {
@@ -71,7 +72,8 @@ func (r *mongoRepository) Find(code string) (*model.Redirect, error) {
 func (r *mongoRepository) Store(redirect *model.Redirect) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.timeout*time.Second)
 	defer cancel()
-	collection := r.client.Database(r.database).Collection(MONGODB_COLLECTION)
+
+	collection := r.db.Database(r.database).Collection(MONGODB_COLLECTION)
 	_, err := collection.InsertOne(
 		ctx,
 		bson.M{

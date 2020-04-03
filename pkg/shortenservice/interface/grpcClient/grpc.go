@@ -20,28 +20,28 @@ func NewGRPCHandler(shortenUseCase usecase.IShortenUseCase) protobuf.ShortenerSe
 	return &GRPCHandler{shortenUseCase}
 }
 
-func (h *GRPCHandler) Find(ctx context.Context, request *protobuf.Redirect) (*protobuf.Redirect, error) {
+func (h *GRPCHandler) Find(ctx context.Context, request *protobuf.RedirectFindRequest) (*protobuf.RedirectFindResponse, error) {
+	// test client|server timeout middleware
+	// time.Sleep(2 * time.Second)
 	redirect, err := h.shortenUseCase.Find(request.GetCode())
 	if err != nil {
 		return nil, err
 	}
-	return &protobuf.Redirect{
-		Code:      redirect.Code,
-		Url:       redirect.URL,
-		CreatedAt: redirect.CreateAt,
+	return &protobuf.RedirectFindResponse{
+		Code: redirect.Code,
+		Url:  redirect.URL,
 	}, nil
 }
 
-func (h *GRPCHandler) Store(ctx context.Context, request *protobuf.Redirect) (*protobuf.Redirect, error) {
+func (h *GRPCHandler) Store(ctx context.Context, request *protobuf.RedirectStoreRequest) (*protobuf.RedirectStoreResponse, error) {
 	item := &model.Redirect{URL: request.GetUrl()}
 	err := h.shortenUseCase.Store(item)
 	if err != nil {
 		return nil, err
 	}
 
-	return &protobuf.Redirect{
-		Code:      item.Code,
-		Url:       item.URL,
-		CreatedAt: item.CreateAt,
+	return &protobuf.RedirectStoreResponse{
+		Code: item.Code,
+		Url:  item.URL,
 	}, nil
 }

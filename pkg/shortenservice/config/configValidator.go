@@ -14,11 +14,11 @@ const (
 // use case code. Need to map to the use case code (UseCaseConfig) in the configuration yaml file.
 // Client app use those to retrieve use case from the container
 const (
-	SHORTEN_URL = "shortenURL"
+	SHORTEN_URL string = "shortenURL"
 )
 
 const (
-	REDIRECT_REPO = "redirectRepo"
+	REDIRECT_REPO string = "redirectRepo"
 )
 
 // constant for logger code, it needs to match log code (logConfig)in configuration

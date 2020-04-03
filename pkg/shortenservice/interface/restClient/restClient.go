@@ -9,8 +9,8 @@ import (
 	"hexa_micro/pkg/shortenservice/usecase"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
-	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 )
 
@@ -45,7 +45,8 @@ func (h *handler) serializer(contentType string) serializer.IRedirectSerializer 
 }
 
 func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
-	code := chi.URLParam(r, "code")
+	// code := chi.URLParam(r, "code")
+	code := strings.TrimPrefix(r.URL.Path, "/")
 	redirect, err := h.shortenURLUseCase.Find(code)
 	if err != nil {
 		if errors.Cause(err) == config.ErrRedirectNotFound {
