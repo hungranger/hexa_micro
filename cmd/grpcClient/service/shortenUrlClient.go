@@ -9,7 +9,7 @@ import (
 type ShortenURLClient struct {
 }
 
-func (sc ShortenURLClient) callStore(ctx context.Context, client protobuf.ShortenerServiceClient, url string) *protobuf.RedirectStoreResponse {
+func (sc ShortenURLClient) CallStore(ctx context.Context, client protobuf.ShortenerServiceClient, url string) *protobuf.RedirectStoreResponse {
 	msg := protobuf.RedirectStoreRequest{Url: url}
 	item, err := client.Store(ctx, &msg)
 	if err != nil {

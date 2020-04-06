@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "D:\\Workspace\\Go\\projects\\hexa_micro\\cmd\\grpcClient\\main.go",
+            "program": "D:\\Workspace\\Go\\projects\\hexa_micro\\cmd\\restClient\\jsonClient.go",
             "env": {},
             "args": []
         }

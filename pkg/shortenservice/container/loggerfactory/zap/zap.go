@@ -99,7 +99,7 @@ func initLog(lc config.LogConfig) (zap.Logger, error) {
 		return *zLogger, errors.Wrap(err, "cfg.Build()")
 	}
 
-	// zLogger.Debug("logger-zap construction succeeded")
+	zLogger.Debug("logger: ZAP construction succeeded")
 	return *zLogger, nil
 }
 

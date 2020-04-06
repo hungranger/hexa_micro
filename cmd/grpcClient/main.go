@@ -42,24 +42,24 @@ func main() {
 	}
 
 	client := protobuf.NewShortenerServiceClient(conn)
-
-	// var result []protobuf.RedirectStoreResponse
 	serviceClient := middleware.BuildGetMiddleware(service.ShortenURLClient{})
 
-	req := &protobuf.RedirectFindRequest{
-		Code: "abc",
-	}
-	value, err := serviceClient.CallFind(context.Background(), client, req)
-	logger.Log.Infof("value: %+v, err: %v", value, err)
+	item := service.ShortenURLClient{}.CallStore(context.Background(), client, "https://github.com")
 
-	testCircuitBreaker(serviceClient, client)
-
-	// item := callStore(client, "https://github.com")
+	// var result []protobuf.RedirectStoreResponse
 	// result = append(result, *item)
 	// item = callStore(client, "https://vnexpress.net")
 	// result = append(result, *item)
 	// item = callStore(client, "https://google.com")
 	// result = append(result, *item)
+
+	req := &protobuf.RedirectFindRequest{
+		Code: item.GetCode(),
+	}
+	value, err := serviceClient.CallFind(context.Background(), client, req)
+	logger.Log.Infof("%s => http://localhost:8080/%s, err: %v", value.GetUrl(), value.GetCode(), err)
+
+	// testCircuitBreaker(serviceClient, client)
 
 	// for _, item := range result {
 	// 	req := &protobuf.RedirectFindRequest{

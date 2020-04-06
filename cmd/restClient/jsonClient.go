@@ -34,7 +34,7 @@ func main() {
 
 	json.Unmarshal(body, &redirect)
 
-	logger.Log.Infof("%v\n", redirect)
+	logger.Log.Infof("%+v\n", redirect)
 }
 
 func httpPort() string {

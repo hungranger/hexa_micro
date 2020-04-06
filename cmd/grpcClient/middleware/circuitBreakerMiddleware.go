@@ -63,7 +63,7 @@ func (cbm CircuitBreakerCallFind) CallFind(ctx context.Context, client protobuf.
 		cbErr = status.Error(codes.Unavailable, cbErr.Error())
 		return nil, cbErr
 	}
-	logger.Log.Infof("value: %v, err: %v", value, err)
+	// logger.Log.Infof("value: %v, err: %v", value, err)
 
 	return value, err
 }
