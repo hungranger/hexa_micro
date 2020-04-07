@@ -1,5 +1,5 @@
 
-# Northern Star
+# The North Star
 
 After years of working as a software engineer, I found out that every developer needs to choose a philosophy or a system to follow. For me, a good application is the one that satisfies 2 points:
 
