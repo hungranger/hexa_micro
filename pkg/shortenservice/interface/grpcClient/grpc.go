@@ -5,6 +5,7 @@ import (
 	"hexa_micro/pkg/shortenservice/interface/grpcClient/protobuf"
 	"hexa_micro/pkg/shortenservice/model"
 	"hexa_micro/pkg/shortenservice/usecase"
+	"time"
 )
 
 // type RPCServer interface {
@@ -22,7 +23,7 @@ func NewGRPCHandler(shortenUseCase usecase.IShortenUseCase) protobuf.ShortenerSe
 
 func (h *GRPCHandler) Find(ctx context.Context, request *protobuf.RedirectFindRequest) (*protobuf.RedirectFindResponse, error) {
 	// test client|server timeout middleware
-	// time.Sleep(2 * time.Second)
+	time.Sleep(2 * time.Second)
 	redirect, err := h.shortenUseCase.Find(request.GetCode())
 	if err != nil {
 		return nil, err

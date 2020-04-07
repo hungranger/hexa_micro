@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	FIND_TIMEOUT = 300
+	FIND_TIMEOUT = 200
 )
 
 type TimeoutFindMiddleware struct {
