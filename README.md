@@ -61,24 +61,30 @@ For now, configuration and container are implemented as simple as possible. In t
 With the combination of configuration and container, we seldom change any existing code (except for the container code), but only add new code to reduce QA's workload.
 
 **Config database**
+
 ![](https://i.imgur.com/BqAhOGR.png)
 
 **Config logger**
+
 ![](https://i.imgur.com/RwH1PjE.png)
   
 ## Watcher
 To have an observer/feedback system, I add test cases for every file belong to business code and implement logging, tracing, resilient techniques like rate limiting, retry, timeout, circuit break to make sure the service work consistently.  
 
 **Implement Rate limiting on server**
+
 ![](https://i.imgur.com/4pUIMcX.png)
 
 **Implement Timeout on both server and client**
+
 ![](https://i.imgur.com/tCWTopW.png)
 
 **Implement Retry on client**
+
 ![](https://i.imgur.com/Ne0dkFV.png)
 
 **Implement Circuit Breaker on client**
+
 ![](https://i.imgur.com/dTvYPOD.png)
 
 In the future, we can use Netflix’s Hystrix which integrates both the bulkhead isolation technology and the Circuit breaker to achieve isolation by restricting access to a service’s resources (typically Thread). And when we have many functions to implement resilient techniques, it's time for Service Mesh to come to the rescue. Because most of the problems and solutions of service resilience are related to infrastructure, it is better to leave them to infrastructure rather than code. This should relief application code from those burdens and focus back on business logic.  Now we have extracted those features out of application code and passed them to Service Mesh, of which the popular ones are Istio and Linkerd. By manipulating service requests, Service Mesh gained granular control of applications, while on the contrary, the container can only control the service level.
